@@ -21,7 +21,7 @@ class ExpenseController extends Controller
         $expenses = $this->expenseService->getFiltered();
         return response()->json([
             'expenses' => $expenses,
-        ]);
+        ], 200);
     }
 
     public function store(StoreExpenseRequest $request)
@@ -29,7 +29,7 @@ class ExpenseController extends Controller
         $expense = $this->expenseService->create($request->validated());
         return response()->json([
             'expense' => $expense,
-        ]);
+        ], 201);
     }
 
     public function show(Expense $expense)
@@ -37,7 +37,7 @@ class ExpenseController extends Controller
         $expense = $this->expenseService->findExpense($expense);
         return response()->json([
             'expense' => $expense,
-        ]);
+        ], 200);
     }
 
     public function update(UpdateExpenseRequest $request, Expense $expense)
@@ -46,7 +46,7 @@ class ExpenseController extends Controller
 
         return response()->json([
             'expense' => $expense->refresh(),
-        ]);
+        ], 200);
     }
 
     public function destroy(Expense $expense)
@@ -54,7 +54,7 @@ class ExpenseController extends Controller
         $expense = $this->expenseService->delete($expense);
         return response()->json([
             'message' => 'Expense deleted successfully',
-        ]);
+        ], 200);
     }
 
     public function trashed(Expense $expense)
@@ -62,7 +62,7 @@ class ExpenseController extends Controller
         $expense = $this->expenseService->getAllTrashed();
         return response()->json([
             'expense' => $expense,
-        ]);
+        ], 200);
     }
 
     public function showTrashed($id)
@@ -70,7 +70,7 @@ class ExpenseController extends Controller
         $expense = $this->expenseService->findTrashedById($id);
         return response()->json([
             'expense' => $expense,
-        ]);
+        ], 200);
     }
 
     public function restore($id)
@@ -78,7 +78,7 @@ class ExpenseController extends Controller
         $expense = $this->expenseService->restore($id);
         return response()->json([
             'message' => 'Expense restored successfully',
-        ]);
+        ], 200);
     }
 
     public function forceDelete($id)
@@ -86,7 +86,7 @@ class ExpenseController extends Controller
         $expense = $this->expenseService->forceDelete($id);
         return response()->json([
             'message' => 'Expense permanently deleted successfully',
-        ]);
+        ], 200);
     }
 
     public function insights()
@@ -96,6 +96,6 @@ class ExpenseController extends Controller
 
         return response()->json([
             'insights' => $insights,
-        ]);
+        ], 200);
     }
 }

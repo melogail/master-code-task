@@ -25,7 +25,7 @@ class ExpenseFactory extends Factory
             'category_id' => fake()->randomElement($categoryIds),
             'vendor_id' => fake()->randomElement($vendorIds),
             'amount' => fake()->randomFloat(2, 1, 1000),
-            'date' => fake()->dateTimeThisYear(),
+            'date' => fake()->date('Y-m-d'),
             'description' => fake()->sentence(),
         ];
     }

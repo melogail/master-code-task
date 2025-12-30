@@ -17,9 +17,9 @@ class VendorController extends Controller
 
     public function index()
     {
-        $vendors = VendorResource::collection(Vendor::all());
         return response()->json(
-            ["vendors" => $vendors]
+            ["vendors" => VendorResource::collection(Vendor::all())],
+            200
         );
     }
 
@@ -27,15 +27,17 @@ class VendorController extends Controller
     {
         $this->authorize('create', Vendor::class);
 
-        $vendor = Vendor::create($request->all());
-        return response()->json($vendor);
+        $vendor = Vendor::create($request->validated());
+        return response()->json([
+            'vendor' => VendorResource::make($vendor),
+        ], 201);
     }
 
     public function show(Vendor $vendor)
     {
         return response()->json([
             'vendor' => VendorResource::make($vendor),
-        ]);
+        ], 200);
     }
 
     public function update(UpdateVendorRequest $request, Vendor $vendor)
@@ -43,8 +45,10 @@ class VendorController extends Controller
 
         $this->authorize('update', $vendor);
 
-        $vendor->update($request->all());
-        return response()->json($vendor);
+        $vendor->update($request->validated());
+        return response()->json([
+            'vendor' => VendorResource::make($vendor->refresh()),
+        ], 200);
     }
 
     public function destroy(Vendor $vendor)
@@ -53,7 +57,8 @@ class VendorController extends Controller
 
         $vendor->delete();
         return response()->json(
-            ['message' => 'Vendor deleted successfully']
+            ['message' => 'Vendor deleted successfully'],
+            200
         );
     }
 
@@ -63,7 +68,7 @@ class VendorController extends Controller
 
         return response()->json([
             'vendors' => VendorResource::collection(Vendor::onlyTrashed()->get()),
-        ]);
+        ], 200);
     }
 
     public function showTrashed($id)
@@ -74,7 +79,7 @@ class VendorController extends Controller
 
         return response()->json([
             'vendor' => VendorResource::make($vendor),
-        ]);
+        ], 200);
     }
 
     public function restore($id)
@@ -86,7 +91,7 @@ class VendorController extends Controller
         $vendor->restore();
         return response()->json([
             'message' => 'Vendor restored successfully',
-        ]);
+        ], 200);
     }
 
     public function forceDelete($id)
@@ -98,6 +103,6 @@ class VendorController extends Controller
         $vendor->forceDelete();
         return response()->json([
             'message' => 'Vendor deleted permanently successfully',
-        ]);
+        ], 200);
     }
 }

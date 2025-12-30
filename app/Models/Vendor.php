@@ -14,7 +14,7 @@ class Vendor extends Model
 {
     use SoftDeletes, HasFactory;
 
-    protected $fillable = ['name', 'contact_info', 'is_active'];
+    protected $fillable = ['name', 'email', 'phone', 'address', 'is_active'];
 
     protected $casts = [
         'is_active' => 'boolean',

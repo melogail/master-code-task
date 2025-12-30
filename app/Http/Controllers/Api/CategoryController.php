@@ -28,7 +28,9 @@ class CategoryController extends Controller
         $this->authorize('create', Category::class);
 
         $category = Category::create($request->all());
-        return response()->json(CategoryResource::make($category));
+        return response()->json([
+            'category' => CategoryResource::make($category),
+        ], 201);
     }
 
     public function show(Category $category)
@@ -45,7 +47,7 @@ class CategoryController extends Controller
         $category->update($request->all());
         return response()->json([
             'category' => CategoryResource::make($category),
-        ]);
+        ], 200);
     }
 
     public function destroy(Category $category)
@@ -62,7 +64,7 @@ class CategoryController extends Controller
 
         return response()->json([
             'message' => 'Category deleted successfully',
-        ]);
+        ], 200);
     }
 
     public function trashed()
@@ -72,7 +74,7 @@ class CategoryController extends Controller
         $categories = CategoryResource::collection(Category::onlyTrashed()->get());
         return response()->json([
             'categories' => $categories,
-        ]);
+        ], 200);
     }
 
     public function showTrashed($id)
@@ -83,7 +85,7 @@ class CategoryController extends Controller
 
         return response()->json([
             'category' => CategoryResource::make($category),
-        ]);
+        ], 200);
     }
 
     public function restore($id)
@@ -95,7 +97,7 @@ class CategoryController extends Controller
 
         return response()->json([
             'message' => 'Category restored successfully',
-        ]);
+        ], 200);
     }
 
     public function forceDelete($id)
@@ -107,6 +109,6 @@ class CategoryController extends Controller
 
         return response()->json([
             'message' => 'Category deleted permanently successfully',
-        ]);
+        ], 200);
     }
 }

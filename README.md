@@ -1247,16 +1247,58 @@ async function getExpenses(filters = {}) {
 
 ### Run PHPUnit Tests
 
+This project includes comprehensive feature tests for authorization and CRUD operations.
+
 ```bash
 # Run all tests
 php artisan test
-
-# Run specific test file
-php artisan test tests/Feature/ExpenseTest.php
-
-# Run with coverage
-php artisan test --coverage
 ```
+
+#### Running Specific Test Suites
+
+You can run tests for specific features using the `--filter` option:
+
+**Category Tests:**
+
+```bash
+# Run all category tests
+php artisan test --filter=Category
+
+# Run specific suite
+php artisan test tests/Feature/Categories/CategoryAuthorizationTest.php
+php artisan test tests/Feature/Categories/CategoryCrudTest.php
+```
+
+**Vendor Tests:**
+
+```bash
+# Run all vendor tests
+php artisan test --filter=Vendor
+
+# Run specific suite
+php artisan test tests/Feature/Vendors/VendorAuthorizationTest.php
+php artisan test tests/Feature/Vendors/VendorCrudTest.php
+```
+
+**Expense Tests:**
+
+```bash
+# Run all expense tests
+php artisan test --filter=Expense
+
+# Run specific suite
+php artisan test tests/Feature/Expenses/ExpenseAuthorizationTest.php
+php artisan test tests/Feature/Expenses/ExpenseCrudTest.php
+```
+
+### Test Coverage
+
+The test suite covers:
+
+-   **Authorization**: Verifies that Staff users cannot perform Admin-only actions (creating/updating/deleting categories & vendors, accessing trashed items).
+-   **CRUD Operations**: Verifies that Admins can successfully create, read, update, delete, restore, and force-delete resources.
+-   **Global Scopes**: Ensures data visibility rules are correctly applied (Staff see only active items).
+-   **Validation**: Checks API response codes (201 Created, 403 Forbidden, 422 Unprocessable Entity).
 
 ### Manual Testing with Artisan Tinker
 
