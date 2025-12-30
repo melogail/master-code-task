@@ -23,7 +23,9 @@ class UpdateVendorRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255', 'unique:vendors,name,' . $this->route('vendor')->id],
-            'contact_info' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'max:255', 'unique:vendors,email,' . $this->route('vendor')->id],
+            'phone' => ['required', 'string', 'max:255', 'unique:vendors,phone,' . $this->route('vendor')->id],
+            'address' => ['required', 'string', 'max:255'],
         ];
     }
 }

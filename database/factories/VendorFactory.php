@@ -17,9 +17,11 @@ class VendorFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'contact_info' => fake()->phoneNumber(),
-            'is_active' => fake()->boolean(),
+            'name' => fake()->unique()->name(),
+            'email' => fake()->unique()->email(),
+            'phone' => fake()->unique()->phoneNumber(),
+            'address' => fake()->address(),
+            'is_active' => fake()->boolean(90),
             'created_at' => fake()->dateTimeBetween('-1 year', '+1 year'),
             'updated_at' => fake()->dateTimeBetween('-1 year', '+1 year'),
         ];
