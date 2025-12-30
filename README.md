@@ -20,7 +20,7 @@ A RESTful API built with Laravel 11 for managing expenses, categories, vendors, 
 
 ## Features
 
--   ✅ **User Authentication** - Secure login and registration using Laravel Sanctum
+-   ✅ **User Authentication** - Secure login using Laravel Sanctum
 -   ✅ **Expense Management** - Create, read, update, and delete expenses
 -   ✅ **Category Management** - Organize expenses by categories
 -   ✅ **Vendor Management** - Track vendors for expenses
@@ -104,7 +104,7 @@ php artisan migrate
 
 ### Step 7: (Optional) Seed Database
 
-If you have seeders configured, run:
+Seeders configured, run:
 
 ```bash
 php artisan db:seed
@@ -136,7 +136,7 @@ APP_DEBUG=true
 APP_URL=http://localhost:8000
 
 # Database
-DB_CONNECTION=sqlite
+DB_CONNECTION=sqlite  # or add MySQL configuration
 
 # Session
 SESSION_DRIVER=database
@@ -396,33 +396,6 @@ http://localhost:8000/api
 ### Authentication
 
 This API uses **Laravel Sanctum** for authentication. After logging in or registering, you'll receive a token that must be included in subsequent requests.
-
-#### Register
-
-```http
-POST /api/register
-Content-Type: application/json
-
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "password123",
-  "password_confirmation": "password123"
-}
-```
-
-**Response:**
-
-```json
-{
-    "user": {
-        "id": 1,
-        "name": "John Doe",
-        "email": "john@example.com"
-    },
-    "token": "1|abc123..."
-}
-```
 
 #### Login
 
@@ -687,16 +660,6 @@ Authorization: Bearer {your-token}
         "min_of_expenses": 15.0
     }
 }
-```
-
-### Users API
-
-```http
-GET /api/users          # List all users
-POST /api/users         # Create user
-GET /api/users/{id}     # Get single user
-PUT /api/users/{id}     # Update user
-DELETE /api/users/{id}  # Delete user
 ```
 
 ## Code Architecture
@@ -975,50 +938,6 @@ class ExpenseScope implements Scope
     -   The associated category has `is_active = true`
     -   The expense amount is greater than 0
 
-#### How Global Scopes Work in Practice
-
-**Example 1: Querying Categories**
-
-```php
-// As Staff User (is_admin = false)
-$categories = Category::all();
-// SQL: SELECT * FROM categories WHERE is_active = 1
-
-// As Admin User (is_admin = true)
-$categories = Category::all();
-// SQL: SELECT * FROM categories
-```
-
-**Example 2: Querying Expenses**
-
-```php
-// As Staff User
-$expenses = Expense::all();
-// SQL: SELECT * FROM expenses
-//      WHERE amount > 0
-//      AND EXISTS (
-//          SELECT * FROM categories
-//          WHERE categories.id = expenses.category_id
-//          AND is_active = 1
-//      )
-
-// As Admin User
-$expenses = Expense::all();
-// SQL: SELECT * FROM expenses
-```
-
-**Example 3: Bypassing Global Scopes (Admin Only)**
-
-If you need to bypass a global scope explicitly:
-
-```php
-// Get all categories including inactive ones
-$allCategories = Category::withoutGlobalScopes()->get();
-
-// Get all expenses including those with negative amounts
-$allExpenses = Expense::withoutGlobalScope(ExpenseScope::class)->get();
-```
-
 #### Model Implementation
 
 Models use the `#[ScopedBy()]` attribute to apply global scopes:
@@ -1176,73 +1095,6 @@ curl -X GET "http://localhost:8000/api/expenses?from=2025-01-01&to=2025-12-31" \
     - Token: Paste your token
 4. **Make Requests**: Use the endpoints documented above
 
-### Example 3: JavaScript/Axios
-
-```javascript
-const axios = require("axios");
-
-const API_URL = "http://localhost:8000/api";
-let authToken = "";
-
-// Login
-async function login() {
-    const response = await axios.post(`${API_URL}/login`, {
-        email: "john@example.com",
-        password: "password123",
-    });
-
-    authToken = response.data.token;
-    return response.data;
-}
-
-// Create expense
-async function createExpense(expenseData) {
-    const response = await axios.post(`${API_URL}/expenses`, expenseData, {
-        headers: {
-            Authorization: `Bearer ${authToken}`,
-            "Content-Type": "application/json",
-        },
-    });
-
-    return response.data;
-}
-
-// Get filtered expenses
-async function getExpenses(filters = {}) {
-    const params = new URLSearchParams(filters);
-    const response = await axios.get(`${API_URL}/expenses?${params}`, {
-        headers: {
-            Authorization: `Bearer ${authToken}`,
-        },
-    });
-
-    return response.data;
-}
-
-// Usage
-(async () => {
-    await login();
-
-    const expense = await createExpense({
-        category_id: 1,
-        vendor_id: 1,
-        amount: 99.99,
-        date: "2025-12-29",
-        description: "Team building event",
-    });
-
-    console.log("Created expense:", expense);
-
-    const filtered = await getExpenses({
-        category: "Office",
-        from: "2025-01-01",
-        to: "2025-12-31",
-    });
-
-    console.log("Filtered expenses:", filtered);
-})();
-```
-
 ## Testing
 
 ### Run PHPUnit Tests
@@ -1377,41 +1229,13 @@ npm run build
 4. **Set Permissions**
 
 ```bash
-chmod -R 755 storage bootstrap/cache
+chmod -R 755 storage bootstrap/
 ```
 
 5. **Run Migrations**
 
 ```bash
 php artisan migrate --force
-```
-
-### Deployment to Shared Hosting
-
-1. Upload files to `public_html` or `www` directory
-2. Move contents of `public/` to root web directory
-3. Update `index.php` to point to correct paths
-4. Configure `.htaccess` for URL rewriting
-5. Set environment variables via hosting control panel
-
-### Deployment to VPS (Ubuntu/Nginx)
-
-```bash
-# Install dependencies
-sudo apt update
-sudo apt install php8.2-fpm nginx mysql-server
-
-# Configure Nginx
-sudo nano /etc/nginx/sites-available/your-domain
-
-# Enable site
-sudo ln -s /etc/nginx/sites-available/your-domain /etc/nginx/sites-enabled/
-
-# Restart Nginx
-sudo systemctl restart nginx
-
-# Set permissions
-sudo chown -R www-data:www-data /var/www/your-app
 ```
 
 ## Troubleshooting
@@ -1429,8 +1253,8 @@ php artisan migrate
 **Issue: "Permission denied on storage"**
 
 ```bash
-chmod -R 775 storage
-chmod -R 775 bootstrap/cache
+chmod -R 775 storage/
+chmod -R 775 bootstrap/
 ```
 
 **Issue: "Token mismatch"**
@@ -1440,14 +1264,6 @@ chmod -R 775 bootstrap/cache
 php artisan cache:clear
 php artisan config:clear
 ```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
 ## License
 
