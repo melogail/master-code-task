@@ -16,9 +16,12 @@ class Category extends Model
 
     protected $fillable = ['name', 'is_active'];
 
-    protected $casts = ['is_active' => 'boolean'];
-
-    protected $dates = ['created_at', 'updated_at', 'deleted_at'];
+    protected $casts = [
+        'is_active' => 'boolean',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
+    ];
 
     /**
      * ====================

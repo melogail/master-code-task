@@ -15,4 +15,9 @@ class ExpensePolicy extends Policies
     {
         return true;
     }
+
+    public function viewInsights(User $user): bool
+    {
+        return $user->is_admin;
+    }
 }

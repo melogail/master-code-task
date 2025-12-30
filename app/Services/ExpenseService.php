@@ -6,6 +6,7 @@ use App\Repositories\ExpenseRepository;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Models\Expense;
 use App\Http\Resources\ExpenseResource;
+use App\Helpers\Insights;
 
 class ExpenseService
 {
@@ -83,5 +84,24 @@ class ExpenseService
 
         $this->authorize('restore', $expense);
         return $this->expenseRepository->restore($expense);
+    }
+
+    public function getInsights()
+    {
+        $this->authorize('viewInsights', Expense::class);
+
+        return [
+            'overview' => Insights::overview(),
+            'monthlyOverview' => Insights::monthlyOverview(),
+            'quarterlyOverview' => Insights::quarterlyOverview(),
+            'yearlyOverview' => Insights::yearlyOverview(),
+        ];
+    }
+
+    public function getInsightsByCategory(string $category, $from = null, $to = null)
+    {
+        $this->authorize('viewInsights', Expense::class);
+
+        return Insights::insightsExpensesByCategory($category, $from, $to);
     }
 }

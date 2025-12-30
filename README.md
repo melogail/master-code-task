@@ -26,6 +26,7 @@ A RESTful API built with Laravel 11 for managing expenses, categories, vendors, 
 -   ✅ **Vendor Management** - Track vendors for expenses
 -   ✅ **Soft Deletes** - Recover deleted records when needed
 -   ✅ **Advanced Filtering** - Filter expenses by category, vendor, and date range
+-   ✅ **Data Insights** - Real-time statistics and analytics for expenses, categories, and vendors
 -   ✅ **Authorization** - Role-based access control using Laravel Policies
 -   ✅ **Repository Pattern** - Clean separation of data access logic
 -   ✅ **Service Layer** - Business logic encapsulation
@@ -230,6 +231,7 @@ Admins have **full access** to all resources and operations:
 -   ✅ View specific trashed expenses
 -   ✅ Restore trashed expenses
 -   ✅ Permanently delete expenses
+-   ✅ View expense insights
 
 #### Staff Users (`is_admin = false`)
 
@@ -256,6 +258,7 @@ Staff users have **limited access** based on the `ExpensePolicy`:
 -   ❌ View trashed expenses (Admin only)
 -   ❌ Restore expenses (Admin only)
 -   ❌ Force delete expenses (Admin only)
+-   ❌ View expense insights (Admin only)
 
 #### Authorization Implementation
 
@@ -318,6 +321,12 @@ public function create(User $user): bool
 public function delete(User $user, $expense): bool
 {
     return true;
+}
+
+// Only admins can view insights
+public function viewInsights(User $user): bool
+{
+    return $user->is_admin;
 }
 ```
 
@@ -627,6 +636,59 @@ DELETE /api/expenses/{id}/force-delete
 Authorization: Bearer {your-token}
 ```
 
+### Insights API
+
+#### Get Expense Insights
+
+Retrieves comprehensive insights and statistics about expenses.
+
+```http
+GET /api/expenses/insights
+Authorization: Bearer {your-token}
+```
+
+**Standard Response (General Overview):**
+Returns overview, monthly, quarterly, and yearly statistics for the current date contexts.
+
+```json
+{
+    "insights": {
+        "overview": {
+            "total_expenses": 1250.00,
+            "count_of_categories": 5,
+            "count_of_vendors": 8,
+            "average_of_expenses": 156.25,
+            "max_of_expenses": 500.00,
+            "min_of_expenses": 25.00
+        },
+        "monthlyOverview": { ... },
+        "quarterlyOverview": { ... },
+        "yearlyOverview": { ... }
+    }
+}
+```
+
+**Filtered Response (By Category & Date):**
+Pass `category` query parameter to get insights for a specific category. You can also optionally specify `from` and `to` dates.
+
+```http
+GET /api/expenses/insights?category=Food&from=2025-01-01&to=2025-01-31
+Authorization: Bearer {your-token}
+```
+
+**Response:**
+
+```json
+{
+    "insights": {
+        "total_expenses": 450.0,
+        "average_of_expenses": 45.0,
+        "max_of_expenses": 120.0,
+        "min_of_expenses": 15.0
+    }
+}
+```
+
 ### Users API
 
 ```http
@@ -784,6 +846,10 @@ class Expense extends Model
     }
 }
 ```
+
+### Data Insights Helper
+
+Complex statistical calculations are offloaded to `App\Helpers\Insights`. This helper class provides static methods to aggregate data reliably (sums, averages, counts, min/max) and handles logic for different time periods (monthly, quarterly, yearly). This keeps the Controller and Service layers clean and focused on request handling and business logic respectively.
 
 ### Global Scopes
 

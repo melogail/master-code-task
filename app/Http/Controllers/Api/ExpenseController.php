@@ -88,4 +88,14 @@ class ExpenseController extends Controller
             'message' => 'Expense permanently deleted successfully',
         ]);
     }
+
+    public function insights()
+    {
+        $category = request()->query('category');
+        $insights = $category ? $this->expenseService->getInsightsByCategory($category, request()->query('from'), request()->query('to')) : $this->expenseService->getInsights();
+
+        return response()->json([
+            'insights' => $insights,
+        ]);
+    }
 }

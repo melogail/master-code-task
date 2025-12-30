@@ -18,13 +18,11 @@ class Vendor extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
     ];
 
-    protected $dates = [
-        'created_at',
-        'updated_at',
-        'deleted_at',
-    ];
 
     /**
      * ===================

@@ -35,6 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Expenses API Routes
     Route::get('expenses/trashed', [ExpenseController::class, 'trashed'])->name('expenses.trashed');
+    Route::get('expenses/insights', [ExpenseController::class, 'insights'])->name('expenses.insights');
     Route::get('expenses/{id}/trashed', [ExpenseController::class, 'showTrashed'])->name('expenses.showTrashed');
     Route::post('expenses/{id}/restore', [ExpenseController::class, 'restore'])->name('expenses.restore');
     Route::delete('expenses/{expense}/force-delete', [ExpenseController::class, 'forceDelete'])->name('expenses.force-delete');
